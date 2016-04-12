@@ -1,0 +1,76 @@
+<!doctype html>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/readable/bootstrap.min.css" rel="stylesheet" integrity="sha256-xZf1oKvAz2ou2qhEduvwW4dDmGlmHADVup7mEqdKU6k= sha512-go0HHuJkbEVqGsIW4i045yNp9n/jCC5Dywtr9MmZ41n6h+tBhCLod4AvtLxrFp489K2KppmGbufl0iKnhMwcOQ==" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+<title>Document Search</title>
+{% block body %}
+
+<div class="bs-component">
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<form action="/" method="put" class="navbar-form navbar-left">
+				<div class="form-group">
+					<input type="text" name="q" value="{{query}}" class="form-control">	
+					<div class="form-group">
+						<label>Channel: </label>
+						 <select class="form-control" name="channel" value={{requested_channel}} id="channelselect">
+						 	<option></option>
+						 	{% for channel in channels %}
+						 		{% if channel == requested_channel %}
+							    <option selected>{{channel}}</option>
+							    {% else %}
+							    <option>{{channel}}</option>
+						 		{% endif %}
+							{% endfor %}
+						 </select>
+					</div>
+					<div class="form-group">
+						<label>User: </label>
+						 <select class="form-control" name="user" value={{requested_user}} id="userselect">
+
+					 		<option></option>
+						 	{% for user in users %}
+						 		{% if user == requested_user %}
+						 		<option selected>{{user}} </option>
+						 		{% else %}
+							    <option>{{user}}</option>
+						 		{% endif %}
+							{% endfor %}
+						 </select>
+					</div>
+					<button type="submit" class="btn btn-primary">Search</button>
+				</div>
+			</form>
+		</div>
+	</nav>
+</div>
+
+
+<table class="table">
+	<thead>
+		<tr>
+			<td class="col-md-2"><b>Timestamp</b></td>
+			<td class="col-md-1"><b>Channel</b></td>
+			<td class="col-md-1"><b>Username</b></td>
+			<td class="col-md-4"><b>Message</b></td>
+		</tr>
+	</thead>
+	<tbody>
+		{% for result in results %}
+			<tr>
+				
+				<td class="col-md-2">{{result.timestamp.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+				<td class="col-md-1">{{result.channel}}</td>
+				<td class="col-md-1">{{result.username}}</td>
+				<td class="col-md-4">{{result.message|safe}}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock%}

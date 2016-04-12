@@ -1,0 +1,101 @@
+<!doctype html>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/readable/bootstrap.min.css" rel="stylesheet" integrity="sha256-xZf1oKvAz2ou2qhEduvwW4dDmGlmHADVup7mEqdKU6k= sha512-go0HHuJkbEVqGsIW4i045yNp9n/jCC5Dywtr9MmZ41n6h+tBhCLod4AvtLxrFp489K2KppmGbufl0iKnhMwcOQ==" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+
+
+<title>Document Upload</title>
+{% block body %}
+<html> 
+  <head>
+    <title>File Indexing</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script>
+      $(function() {
+        $("#submit").on("click", function()
+        {
+            var files = $("#upload_file")[0].files;
+            var base_key = "{{key}}";
+            var AWSAccessKeyId = "{{aws_key}}";
+            var acl = "private";
+            var policy = "{{policy}}";
+            var signature = "{{signature}}";
+            var content_type = "application/pdf";
+            var county = $("#county").val();
+            $.each(files, function(index, value) {
+              var filename = value.name;
+              var form = new FormData();
+              form.append("key", base_key+":"+filename.replace(/\W/g, ''));
+              form.append("AWSAccessKeyId", AWSAccessKeyId)
+              form.append("acl", acl);
+              form.append("policy", policy);
+              form.append("signature", signature);
+              form.append("Content-Type", content_type);
+              form.append("x-amz-meta-county", county);
+              form.append("x-amz-meta-name", filename);
+              form.append("file", value, filename);
+              $.ajax({
+                url: "https://clearballot-doc-index-1.s3.amazonaws.com/",
+                data: form,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: function() {
+                  $("#status").html(String(index+1) + " files uploaded");
+                }
+              });
+              
+            })
+            
+
+        });
+    });
+    </script>
+  </head>
+
+  <body> 
+    <div class="col-lg-4">
+        <div class="well bs-component">
+          <form class="form-horizontal">
+            <fieldset>
+              <legend>Upload Files</legend>
+              <span class="help-block">
+                Documents may take 10-15 minutes to be searchable after uploading.
+              </span>
+              <span class="help-block">
+                Only PDFs may be uploaded
+              </span>
+              <span id="status" class="help-block">
+              </span>
+              <div class="form-group">
+                <label class="col-lg-4 control-label" for="CountyName">County Name</label>
+                <div class="col-lg-6">
+                  <input id="county" class="form-control" type="text" name="x-amz-meta-county">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-lg-10 col-lg-offset-2">
+                  <input id="upload_file" name="file" type="file" multiple>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-lg-10 col-lg-offset-2">
+                  <a id="submit" href="#" class="btn btn-primary">Upload Files</a>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+    </div>
+
+  </body>
+</html>
+{% endblock%}
