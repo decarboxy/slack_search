@@ -8,7 +8,6 @@ from os import environ
 from datetime import datetime
 from config import DB_URL
 
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
 db = SQLAlchemy(app)
@@ -19,13 +18,12 @@ class Message(db.Model):
   channel = db.Column(db.String())
   message = db.Column(db.String())
   timestamp = db.Column(db.DateTime())
-
+  
   def __init__(self, username, message, timestamp, channel):
     self.username = username
     self.message = message
     self.timestamp = timestamp
     self.channel = channel
-
 
 
 @app.route('/', methods=['GET', 'PUT'])
